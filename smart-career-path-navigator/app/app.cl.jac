@@ -3138,6 +3138,10 @@ def Dashboard() -> any {
                                     lambda role:any -> any {
                                         return <div
                                             key={role.title}
+                                            onClick={lambda e:any -> None {
+                                                fetchRoadmap(role.title);
+                                            }}
+
                                             className="cursor-pointer px-4 py-3 bg-[#0f0f0f] border border-gray-700 rounded-lg text-white hover:border-primary transition-all"
                                         >
                                             {role.title}
@@ -3336,6 +3340,20 @@ def Dashboard() -> any {
             },
             [activeLink]
         );
+
+        # Fetch roadmap
+        async def fetchRoadmap(roleTitle:any) -> any {
+            try {
+
+                let res = await root spawn get_road_map(roleTitle);
+
+                console.log("Roadmap response:", res.reports);
+
+            } except Exception as e {
+                console.log("Error fetching roadmap:", e);
+            }
+        }
+
 
 
 

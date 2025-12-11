@@ -3201,6 +3201,9 @@ function Dashboard() {
     }, ["Your Target Roles"]), targetRoles.map(function (role) {
       return __jacJsx("div", {
         "key": role.title,
+        "onClick": function onClick(e) {
+          fetchRoadmap(role.title);
+        },
         "className": "cursor-pointer px-4 py-3 bg-[#0f0f0f] border border-gray-700 rounded-lg text-white hover:border-primary transition-all"
       }, [role.title]);
     })])]), activeLink === "quizzes" && __jacJsx("div", {}, [__jacJsx("h1", {
@@ -3390,6 +3393,36 @@ function Dashboard() {
       fetch_user_skills();
     }
   }, [activeLink]);
+  function fetchRoadmap(_x3) {
+    return _fetchRoadmap.apply(this, arguments);
+  }
+  function _fetchRoadmap() {
+    _fetchRoadmap = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(roleTitle) {
+      var res, _t4;
+      return _regenerator().w(function (_context0) {
+        while (1) switch (_context0.p = _context0.n) {
+          case 0:
+            _context0.p = 0;
+            _context0.n = 1;
+            return __jacSpawn("get_road_map", "", {
+              "role_title": roleTitle
+            });
+          case 1:
+            res = _context0.v;
+            console.log("Roadmap response:", res.reports);
+            _context0.n = 3;
+            break;
+          case 2:
+            _context0.p = 2;
+            _t4 = _context0.v;
+            console.log("Error fetching roadmap:", _t4);
+          case 3:
+            return _context0.a(2);
+        }
+      }, _callee0, null, [[0, 2]]);
+    }));
+    return _fetchRoadmap.apply(this, arguments);
+  }
   return __jacJsx("div", {
     "className": "min-h-screen bg-black"
   }, [sidebarOpen && __jacJsx("div", {
