@@ -1,0 +1,7 @@
+node_modules
+.env
+jac-env
+resumes
+learning_paths
+app.session
+app.session.users.json
