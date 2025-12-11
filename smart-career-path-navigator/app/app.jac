@@ -1107,17 +1107,40 @@ walker get_road_map {
     }
 
     can return_learning_path with LearningPath entry {
-        print("Found learning path, reporting...\n");
-        self.learning_path = here.learning_path.encode('utf-8').decode('unicode_escape');
-        report {
-            "status": "Success",
-            "message": "Learning path fetched successfully",
-            "body": {
-                "role_title": here.role_title,
-                "learning_path": self.learning_path
+        print("Checking stored learning path...\n");
+
+        let path = here.disk_path;
+
+        # check if file exists
+        if os.path.exists(path) {
+
+            # read markdown from disk
+            with open(path, "r", encoding="utf-8") as f {
+                let content = f.read();
             }
-        };
+
+            self.learning_path = content;
+
+            report {
+                "status": "Success",
+                "message": "Learning path fetched successfully",
+                "body": {
+                    "role_title": here.role_title,
+                    "learning_path": self.learning_path
+                }
+            };
+
+        } else {
+
+            report {
+                "status": "Fail",
+                "message": "Learning path file missing on disk",
+                "body": {}
+            };
+
+        }
     }
+
 }
 
 # Update user profile i.e add/remove skills, interests and certs
@@ -2083,7 +2106,7 @@ walker retrieve_skill_gaps {
         report {
             "status": "Succcess",
             "message": "Skill gaps retrieved successfully",
-            "body": {}
+            "body": self.gaps.skills
         };
     }
 
@@ -2094,7 +2117,7 @@ walker retrieve_skill_gaps {
         report {
             "status": "Succcess",
             "message": "Certification gaps retrieved successfully",
-            "body": {}
+            "body": self.gaps.certifications
         };
     }
 }
@@ -2250,6 +2273,8 @@ walker recommend_learning_paths {
     Provide enough clarity for a learner to follow with zero ambiguity.
 
     Be extremely detailed and comprehensive.
+
+    Return a blank disk_path because this will be filled later on. 
     """
 
     def suggest_learning_paths(gaps: RoleProfile, user_profile: UserProfile, target_role_requirements: RoleProfile) -> LearningPath
@@ -2350,19 +2375,32 @@ walker recommend_learning_paths {
             if not os.path.exists("learning_paths"){
                 os.makedirs("learning_paths");
             }
+
             # sanitize role title to use as filename
             let safe_title = learning_path.role_title.replace(" ", "_").replace("/", "-");
-            let file_path = "learning_paths/" + safe_title + ".md";
+            let base_path = "learning_paths/" + safe_title + ".md";
+            let file_path = base_path;
+
+            # check if file exists and increment
+            let counter = 1;
+            while os.path.exists(file_path) {
+                let numbered_title = safe_title + "(" + str(counter) + ")";
+                file_path = "learning_paths/" + numbered_title + ".md";
+                counter = counter + 1;
+            }
 
             # convert escaped newlines to real newlines
-            let md_content = learning_path.learning_path.encode('utf-8').decode('unicode_escape');
+            let md_content = learning_path.learning_path.encode("utf-8").decode("unicode_escape");
 
             # write to file
             with open(file_path, "w", encoding="utf-8") as f {
                 f.write(md_content);
             }
+
             print("Learning path saved to:", file_path, "\n");
+
             learning_path.disk_path = file_path;
+
 
             report {
                 "status": "Success",

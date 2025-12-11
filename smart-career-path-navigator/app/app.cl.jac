@@ -16,7 +16,7 @@ import from "@jac-client/utils" {
 }
 import from .fileutils {
     fileToBase64
-}
+} 
 
 import ".styles.css";
 import ".global.css";
