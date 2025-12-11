@@ -3345,9 +3345,9 @@ def Dashboard() -> any {
         async def fetchRoadmap(roleTitle:any) -> any {
             try {
 
-                let res = await root spawn get_road_map(roleTitle);
+                let res = await root spawn get_road_map(disk_path="/home/denis/SCPN/smart-career-path-navigator/app/learning_paths/Machine_Learning_Engineer.md");
 
-                console.log("Roadmap response:", res.reports);
+                console.log("Roadmap response:", res.reports[0]);
 
             } except Exception as e {
                 console.log("Error fetching roadmap:", e);

@@ -3405,11 +3405,11 @@ function Dashboard() {
             _context0.p = 0;
             _context0.n = 1;
             return __jacSpawn("get_road_map", "", {
-              "role_title": roleTitle
+              "disk_path": "/home/denis/SCPN/smart-career-path-navigator/app/learning_paths/Machine_Learning_Engineer.md"
             });
           case 1:
             res = _context0.v;
-            console.log("Roadmap response:", res.reports);
+            console.log("Roadmap response:", res.reports[0]);
             _context0.n = 3;
             break;
           case 2:

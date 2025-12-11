@@ -1093,23 +1093,79 @@ walker get_user_target_roles {
 walker get_road_map {
     has role_title: str = "";
     has learning_path: str | any = "";
+    has disk_path: str = "";
 
     can fetch_learning_path with `root entry {
-        print("Fetching learning path for role...\n");
-        visit [-->(`?LearningPath)](?role_title == self.role_title) else {
-            report {
-                "status": "Fail",
-                "message": "No learning path found for the specified role",
-                "body": {}
-            };
-            disengage;
+        print("Starting roadmap retrieval...\n");
+
+        if self.role_title != "" {
+            print("Role title provided. Visiting LearningPath node...\n");
+
+            visit [-->(`?LearningPath)](?role_title == self.role_title) else {
+                report {
+                    "status": "Fail",
+                    "message": "No learning path found for the specified role",
+                    "body": {}
+                };
+                disengage;
+            }
+        }
+        else {
+            print("No role title provided. Using provided disk path directly...\n");
+            if not self.disk_path or self.disk_path == "" {
+                report {
+                    "status": "Fail",
+                    "message": "No role title or disk path provided",
+                    "body": {}
+                };
+                disengage;
+            }
+            else {
+                print("Using provided disk path...\n");
+                let path = self.disk_path;
+
+                if os.path.exists(path) {
+                    with open(path, "r", encoding="utf-8") as f {
+                        let content = f.read();
+                    }
+
+                    self.learning_path = content;
+
+                    report {
+                        "status": "Success",
+                        "message": "Learning path fetched successfully",
+                        "body": {
+                            "role_title": self.role_title,
+                            "learning_path": self.learning_path
+                        }
+                    };
+                }
+                else {
+                    report {
+                        "status": "Fail",
+                        "message": "Provided disk path does not exist",
+                        "body": {}
+                    };
+                }
+
+            }
         }
     }
 
     can return_learning_path with LearningPath entry {
-        print("Checking stored learning path...\n");
+        print("Checking stored learning path in LearningPath Node...\n");
 
-        let path = here.disk_path;
+        let path = "";
+
+        if not self.disk_path or self.disk_path == "" {
+            print("Using internal path from LearningPath  node...\n");
+            path = here.disk_path;
+        } else {
+            print("Using provided disk path...\n");
+            path = self.disk_path;
+
+        }
+        
 
         # check if file exists
         if os.path.exists(path) {

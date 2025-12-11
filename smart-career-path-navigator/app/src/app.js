@@ -931,8 +931,8 @@ function Dashboard() {
   }, [activeLink]);
   async function fetchRoadmap(roleTitle) {
     try {
-      let res = await __jacSpawn("get_road_map", "", {"role_title": roleTitle});
-      console.log("Roadmap response:", res.reports);
+      let res = await __jacSpawn("get_road_map", "", {"disk_path": "/home/denis/SCPN/smart-career-path-navigator/app/learning_paths/Machine_Learning_Engineer.md"});
+      console.log("Roadmap response:", res.reports[0]);
     } catch (e) {
       console.log("Error fetching roadmap:", e);
     }
